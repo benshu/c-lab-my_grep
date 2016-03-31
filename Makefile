@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -Wextra -I.
+CFLAGS=-g -O0 -Wall -Wextra -I.
 #DEPS = linked_list.h
 OBJ = my_grep.o
 %.o: %.c $(DEPS)

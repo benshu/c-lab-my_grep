@@ -16,9 +16,8 @@ int main(int argc, char *argv[])
 	while((line_length = getline(&line, &line_cap, input_file)) > 0){
 		if(strstr(line,str_to_find))
 			printf("%s",line);
-		free(line);
-		line = NULL;
 	}
+	free(line);
 	fclose(input_file);
 	return 0;
 }
