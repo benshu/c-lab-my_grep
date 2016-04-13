@@ -8,18 +8,30 @@ int main(int argc, char *argv[])
 	FILE *input_file;
 	char *str_to_find=NULL, *line=NULL;
 	size_t line_cap =0;
-	int line_length=0, current_line_num=0,i=0;
-	bool print_line_num=false, case_insensitive=false;
-	i=1;
+	int line_length=0, current_line_num=0,i=1;
+	bool print_line_num=false, case_insensitive=false, regex=false;
+
 	while (*(argv[i])=='-') {
-		if (*(argv[i]+1)=='n') 
+		if (*(argv[i]+1)=='n')
 			print_line_num = true;
-		else if (*(argv[i]+1)=='i') 
+		else if (*(argv[i]+1)=='i')
 			case_insensitive = true;
+		else if (*(argv[i]+1)=='E')
+			regex = true;
 		i++;
-		
 	}
-	str_to_find = argv[i];
+	if (regex) {
+		char current_char=0,*new_char=NULL;
+		str_to_find = malloc(sizeof(argv[i]));
+		new_char = str_to_find;
+		while((current_char = *argv[i]++) != '\0')
+		{
+			if(current_char != '\\')
+				*new_char++ = current_char;			
+		}
+	} else {
+          str_to_find = argv[i];
+	}
 	if (i<(argc-1)) {
 		input_file = fopen(argv[++i],"r");
 	} else
