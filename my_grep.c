@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+
 // TDD -n line number -i case insensitive -E
 int main(int argc, char *argv[])
 {
@@ -10,6 +11,7 @@ int main(int argc, char *argv[])
 	size_t line_cap =0;
 	int line_length=0, current_line_num=0,i=1;
 	bool print_line_num=false, case_insensitive=false, regex=false, print_bytes_offset =false;
+	bool print_line_count=false;
 	int print_multi_lines = 0;
 
 	while (*(argv[i])=='-') {
@@ -23,6 +25,8 @@ int main(int argc, char *argv[])
 			print_multi_lines = atoi((argv[++i]));
 		else if (*(argv[i]+1)=='b')
 			print_bytes_offset = true;
+		else if (*(argv[i]+1)=='c')
+			print_line_count = true;
 		i++;
 	}
 	if (regex) {
@@ -43,6 +47,7 @@ int main(int argc, char *argv[])
 		input_file =stdin;
 
 	int multi_lines_to_print = 0;
+	int matching_lines_count=0;
 
 	while((line_length = getline(&line, &line_cap, input_file)) > 0){
 		current_line_num++;
@@ -54,7 +59,10 @@ int main(int argc, char *argv[])
 			if (print_bytes_offset) {
 				printf("%lu:", ftell(input_file) - line_length);
 			}
-			printf("%s",line);
+			if (print_line_count) {
+				matching_lines_count++;	
+			} else
+				printf("%s",line);
 		}else if(multi_lines_to_print > 0)
 		{
 			multi_lines_to_print--;
@@ -62,8 +70,11 @@ int main(int argc, char *argv[])
 				printf("%d-", current_line_num);
 			printf("%s",line);
 		}
-
 	}
+	if (print_line_count) {
+		printf("%d\n",matching_lines_count );	
+	}
+
 	free(line);
 	fclose(input_file);
 	return 0;
