@@ -1,14 +1,9 @@
+Rolled back to beta1 version - remember to update later.
 
-passing arguments by reference - any problem with that?
+## valgrind
 
-Commenting - Is it required/ok to put a comment header in each file with general info.
+valgrind -v <program>
+optional:  --leak-check=yes
 
-Input validation and error handling -
-
-Can we assume valid input all around? i.e. not handling multiple whitespace between arguments or getting non-numeric chars where a number is expected.
-
-Is it ok the ignore extra input or should we cancel the command? i.e. "add_item 1 10"
-
-should we print error messages to screen or just ignore them (for compability with automated testing) -
-	 if unrecognized command is inputted, what is the required behaviour - ignore/ print error msg / exit
-	if "add_after 1 2" but 2 is not in the list - ignore / print/error/exit
+DONE integrate valgrind to auto test
+TODO better tests update

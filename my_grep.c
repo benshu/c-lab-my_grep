@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
 	size_t line_cap =0;
 	int line_length=0, current_line_num=0,i=1;
 	bool print_line_num=false, case_insensitive=false, regex=false;
+	int print_multi_lines = 0;
 
 	while (*(argv[i])=='-') {
 		if (*(argv[i]+1)=='n')
@@ -18,6 +19,10 @@ int main(int argc, char *argv[])
 			case_insensitive = true;
 		else if (*(argv[i]+1)=='E')
 			regex = true;
+		else if (*(argv[i]+1)=='A')
+		{
+			print_multi_lines = atoi((argv[++i]));
+		}
 		i++;
 	}
 	if (regex) {
@@ -27,23 +32,32 @@ int main(int argc, char *argv[])
 		while((current_char = *argv[i]++) != '\0')
 		{
 			if(current_char != '\\')
-				*new_char++ = current_char;			
+				*new_char++ = current_char;
 		}
 	} else {
-          str_to_find = argv[i];
+		str_to_find = argv[i];
 	}
 	if (i<(argc-1)) {
 		input_file = fopen(argv[++i],"r");
 	} else
 		input_file =stdin;
+	int multi_lines_to_print = 0;
 	while((line_length = getline(&line, &line_cap, input_file)) > 0){
 		current_line_num++;
 		if((case_insensitive && strcasestr(line,str_to_find)) || strstr(line,str_to_find)){
+			multi_lines_to_print = print_multi_lines;
 			if (print_line_num) {
 				printf("%d:", current_line_num);
 			}
 			printf("%s",line);
+		}else if(multi_lines_to_print > 0)
+		{
+			multi_lines_to_print--;
+			if (print_line_num)
+				printf("%d-", current_line_num);
+			printf("%s",line);
 		}
+
 	}
 	free(line);
 	fclose(input_file);
