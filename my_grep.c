@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
 	size_t line_cap =0;
 	int line_length=0, current_line_num=0,i=1;
 	bool print_line_num=false, case_insensitive=false, regex=false, print_bytes_offset =false;
-	bool print_line_count=false;
+	bool print_line_count=false, print_not_matching=false ;
 	int print_multi_lines = 0;
 
 	while (*(argv[i])=='-') {
@@ -27,6 +27,9 @@ int main(int argc, char *argv[])
 			print_bytes_offset = true;
 		else if (*(argv[i]+1)=='c')
 			print_line_count = true;
+		else if (*(argv[i]+1)=='v')
+			print_not_matching = true;
+
 		i++;
 	}
 	if (regex) {
@@ -48,10 +51,17 @@ int main(int argc, char *argv[])
 
 	int multi_lines_to_print = 0;
 	int matching_lines_count=0;
-
+	bool is_match_in_line=false;
 	while((line_length = getline(&line, &line_cap, input_file)) > 0){
 		current_line_num++;
-		if((case_insensitive && strcasestr(line,str_to_find)) || strstr(line,str_to_find)){
+		// if ( found && !print_not_matching || !found && print_not_matching)
+		// if ( !found || print_not_matching ) && (found || !print_not_matching)
+		if (case_insensitive) 
+			is_match_in_line = strcasestr(line,str_to_find);
+		else
+			is_match_in_line = strstr(line,str_to_find);
+
+		if((is_match_in_line && !print_not_matching) || (!is_match_in_line && print_not_matching)){
 			multi_lines_to_print = print_multi_lines;
 			if (print_line_num) {
 				printf("%d:", current_line_num);
