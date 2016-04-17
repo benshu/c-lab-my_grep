@@ -14,7 +14,7 @@ typedef struct params_struct{
 	int print_multi_lines;
 }Params_struct;
 
-	Params_struct params = {false,false,false,false,false,false,false,0};
+Params_struct params = {false,false,false,false,false,false,false,0};
 
 int parse_arguments(char *argv[])
 {
@@ -39,6 +39,20 @@ int parse_arguments(char *argv[])
 		i++;
 	}
 	return i;
+}
+bool is_match_in_line(char *line, char *str_to_find)
+{
+		if (params.case_insensitive)
+			if (params.strict_match_only)
+				return !strcasecmp(line,str_to_find);
+			else
+				return strcasestr(line,str_to_find);
+		else
+			if (params.strict_match_only)
+				return !strcmp(line,str_to_find);
+			else
+				return strstr(line,str_to_find);
+
 }
 int main(int argc, char *argv[])
 {
@@ -67,7 +81,7 @@ int main(int argc, char *argv[])
 
 	int multi_lines_to_print = 0;
 	int matching_lines_count=0;
-	bool is_match_in_line=false;
+	bool is_match_in_current_line=false;
 	char *temp_char=NULL;
 
 	while((line_length = getline(&line, &line_cap, input_file)) > 0){
@@ -78,18 +92,8 @@ int main(int argc, char *argv[])
 				*temp_char = '\0';
 			}
 		}
-		if (params.case_insensitive)
-			if (params.strict_match_only)
-				is_match_in_line = !strcasecmp(line,str_to_find);
-			else
-				is_match_in_line = strcasestr(line,str_to_find);
-		else
-			if (params.strict_match_only)
-				is_match_in_line = !strcmp(line,str_to_find);
-			else
-				is_match_in_line = strstr(line,str_to_find);
-
-		if((is_match_in_line && !params.print_not_matching) || (!is_match_in_line && params.print_not_matching)){
+		is_match_in_current_line = is_match_in_line(line, str_to_find);
+		if((is_match_in_current_line && !params.print_not_matching) || (!is_match_in_current_line && params.print_not_matching)){
 			multi_lines_to_print = params.print_multi_lines;
 			if (params.print_line_num) {
 				printf("%d:", current_line_num);
