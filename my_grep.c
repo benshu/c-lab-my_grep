@@ -14,12 +14,11 @@ typedef struct params_struct{
 	int print_multi_lines;
 }Params_struct;
 
-	Params_struct params = {};
+	Params_struct params = {false,false,false,false,false,false,false,0};
 
-void parse_arguments(char *argv[])
+int parse_arguments(char *argv[])
 {
-	int i=0;
-	printf("%s\n", argv[0]);
+	int i=1;
 	while (*(argv[i])=='-') {
 		if (*(argv[i]+1)=='n')
 			params.print_line_num = true;
@@ -39,6 +38,7 @@ void parse_arguments(char *argv[])
 			params.strict_match_only = true;
 		i++;
 	}
+	return i;
 }
 int main(int argc, char *argv[])
 {
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 	char *str_to_find=NULL, *line=NULL;
 	size_t line_cap =0;
 	int line_length=0, current_line_num=0,i=1;
-	parse_arguments(argv);
+	i=parse_arguments(argv);
 
 	if (params.regex) {
 		char current_char=0,*new_char=NULL;
