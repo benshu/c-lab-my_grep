@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-
+//
+// TODO - fix -b for stdin
+//
 typedef struct params_struct{
 	bool print_line_num;
 	bool case_insensitive;
@@ -17,7 +19,7 @@ typedef struct params_struct{
 int multi_lines_to_print; // TODO - refactor this global to someplace better
 
 typedef struct line{
-	FILE *origin_source;
+	FILE *input_stream;
 	char *line_content;
 	size_t line_buffer_capacity;
 	int line_num;
@@ -79,7 +81,7 @@ int report_line_match(Line *current_line)
 			printf("%d:", current_line->line_num);
 		}
 		if (params.print_bytes_offset) {
-			printf("%lu:", ftell(current_line->origin_source) - current_line->line_length);
+			printf("%lu:", ftell(current_line->input_stream) - current_line->line_length);
 		}
 		if (params.print_line_count) {
 			return 1;
@@ -112,7 +114,7 @@ int main(int argc, char *argv[])
 	int current_line_num=0,i=1;
 	i=parse_arguments(argv);
 
-	if (params.regex) {
+	if (params.regex) { //TODO - refactor this
 		char current_char=0,*new_char=NULL;
 		str_to_find = malloc(sizeof(argv[i]));
 		new_char = str_to_find;
@@ -121,9 +123,11 @@ int main(int argc, char *argv[])
 			if(current_char != '\\')
 				*new_char++ = current_char;
 		}
+		*new_char = '\0';
 	} else {
 		str_to_find = argv[i];
 	}
+
 	if (i<(argc-1)) {
 		input_file = fopen(argv[++i],"r");
 	} else
