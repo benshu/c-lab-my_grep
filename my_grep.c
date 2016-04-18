@@ -135,26 +135,29 @@ int main(int argc, char *argv[])
 
 	int matching_lines_count=0;
 
-	Line current_line = {
+	Line curr_line = {
 		input_file,
 		NULL,
 		0,
 		0,
 		0,
 		false };
+	//TODO - refactor to a function to readline and set all required params
+	curr_line.line_length = getline(&(curr_line.line_content), &(curr_line.line_buffer_capacity), input_file);
 
-	while((current_line.line_length = getline(&(current_line.line_content), &(current_line.line_buffer_capacity), input_file)) > 0){
-		current_line.line_num = ++current_line_num;
-		replace_newline_with_nullbyte(current_line.line_content);
-		current_line.is_match_in_line= is_match_in_line(current_line.line_content, str_to_find);
-		matching_lines_count += report_line_match(&current_line);
+	while(curr_line.line_length > 0){
+		curr_line.line_num = ++current_line_num;
+		replace_newline_with_nullbyte(curr_line.line_content);
+		curr_line.is_match_in_line= is_match_in_line(curr_line.line_content, str_to_find);
+		matching_lines_count += report_line_match(&curr_line);
+		curr_line.line_length = getline(&(curr_line.line_content), &(curr_line.line_buffer_capacity), input_file);
 	}
 	if (params.print_line_count) {
 		printf("%d\n",matching_lines_count);
 	}
 	if(params.regex)
 		free(str_to_find);
-	free(current_line.line_content);
+	free(curr_line.line_content);
 	fclose(input_file);
 	return 0;
 }
