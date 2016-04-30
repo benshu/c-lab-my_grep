@@ -97,6 +97,8 @@ char* parse_str_to_find(char *argv[], int next_argument_idx)
     {
         if(current_char != '\\')
             *new_char++ = current_char;
+        else if(*argv[next_argument_idx] == '\\')
+            *new_char++ = current_char;
     }
     *new_char = '\0';
     return str_to_find;
