@@ -2,7 +2,7 @@
 
 make
 echo "Preforming Valgrind memory check"
-valgrind --leak-check=yes ./my_grep -v -i -E "o\.pdf" grep_tests/2013.html | diff grep_tests/out9 -
+valgrind --leak-check=yes ./my_grep -v -i -E "o\.pdf" grep_tests/2013.html > /dev/null
 
 echo "Starting tests..."
 echo "--------------------------------------------------------------------------------"
