@@ -57,7 +57,7 @@ int report_line_match(Line *current_line)
             printf("%d:", current_line->line_num);
         }
         if (params.print_bytes_offset) {
-            printf("%lu:", ftell(current_line->input_stream) - current_line->line_length);
+            printf("%d:", current_line->bytes_offset - current_line->line_length);
         }
         if (params.print_line_count) {
             return 1;
@@ -68,6 +68,9 @@ int report_line_match(Line *current_line)
         multi_lines_to_print--;
         if (params.print_line_num)
             printf("%d-", current_line->line_num);
+        if (params.print_bytes_offset) {
+            printf("%d-", current_line->bytes_offset - current_line->line_length);
+        }
         printf("%s\n",current_line->line_content);
     }
     return 0;
@@ -108,8 +111,9 @@ FILE *parse_input_file(char argc, char *argv[], int next_argument_idx)
 {
     if (next_argument_idx<(argc-1)) {
         return fopen(argv[++next_argument_idx],"r");
-    } else
+    } else {
         return stdin;
+    }
 }
 
 int read_line(FILE* input_file, Line *current_line)
@@ -117,6 +121,7 @@ int read_line(FILE* input_file, Line *current_line)
     current_line->line_length = getline(&(current_line->line_content),
                                         &(current_line->line_buffer_capacity),
                                         input_file);
+    current_line->bytes_offset += current_line->line_length;
     current_line->line_num++;
     return current_line->line_length;
 }
@@ -135,12 +140,13 @@ int main(int argc, char *argv[])
     input_file = parse_input_file(argc, argv, next_argument_idx);
 
     Line curr_line = {
-        input_file,
-        NULL,
-        0,
-        0,
-        0,
-        false };
+        input_file,   // *input_stream;
+        NULL,         // *line_content;
+        0,            // line_buffer_capacity;
+        0,            // bytes_offset;
+        0,            // line_num;
+        0,            // line_length;
+        false };      // is_match_in_line;
 
     while(read_line(input_file, &curr_line) > 0){
         replace_newline_with_nullbyte(curr_line.line_content);
@@ -148,9 +154,11 @@ int main(int argc, char *argv[])
                                                       str_to_find);
         matching_lines_count += report_line_match(&curr_line);
     }
+
     if (params.print_line_count) {
         printf("%d\n",matching_lines_count);
     }
+
     if(params.regex)
         free(str_to_find);
     free(curr_line.line_content);

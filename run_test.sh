@@ -17,5 +17,6 @@ cat ./grep_tests/3lines | ./my_grep bla | diff ./grep_tests/out3 -
 ./my_grep -c -i -E "o\.pdf" grep_tests/2013.html | diff grep_tests/out8 -
 ./my_grep -v -i -E "o\.pdf" grep_tests/2013.html | diff grep_tests/out9 -
 ./my_grep -x -i bla grep_tests/3lines | diff grep_tests/out3 -
+cat grep_tests/2013.html | ./my_grep -A 2 -n -b -i io | diff grep_tests/myout10 -
 echo "--------------------------------------------------------------------------------"
 echo "Tests finished!"
