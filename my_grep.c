@@ -111,6 +111,14 @@ FILE *parse_input_file(char argc, char *argv[], int next_argument_idx)
         return stdin;
 }
 
+int read_line(FILE* input_file, Line *current_line)
+{
+    current_line->line_length = getline(&(current_line->line_content),
+                                        &(current_line->line_buffer_capacity),
+                                        input_file);
+    return current_line->line_length;
+}
+
 int main(int argc, char *argv[])
 {
     FILE *input_file;
@@ -132,14 +140,12 @@ int main(int argc, char *argv[])
         0,
         false };
     //TODO - refactor to a function to readline and set all required params
-    curr_line.line_length = getline(&(curr_line.line_content), &(curr_line.line_buffer_capacity), input_file);
 
-    while(curr_line.line_length > 0){
+    while(read_line(input_file, &curr_line) > 0){
         curr_line.line_num = ++current_line_num;
         replace_newline_with_nullbyte(curr_line.line_content);
-        curr_line.is_match_in_line= is_match_in_line(curr_line.line_content, str_to_find);
+        curr_line.is_match_in_line = is_match_in_line(curr_line.line_content, str_to_find);
         matching_lines_count += report_line_match(&curr_line);
-        curr_line.line_length = getline(&(curr_line.line_content), &(curr_line.line_buffer_capacity), input_file);
     }
     if (params.print_line_count) {
         printf("%d\n",matching_lines_count);
