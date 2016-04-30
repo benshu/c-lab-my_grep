@@ -90,20 +90,16 @@ char* parse_str_to_find(char *argv[], int next_argument_idx)
 {
     char *str_to_find = NULL;
 
-    if (params.regex) { //TODO - refactor this
-        char current_char=0, *new_char=NULL;
-        str_to_find = malloc(sizeof(argv[next_argument_idx]));
-        new_char = str_to_find;
-        while((current_char = *argv[next_argument_idx]++) != '\0')
-        {
-            if(current_char != '\\')
-                *new_char++ = current_char;
-        }
-        *new_char = '\0';
-    } else {
-        str_to_find = argv[next_argument_idx];
+    char current_char=0, *new_char=NULL;
+    str_to_find = malloc(sizeof(argv[next_argument_idx]));
+    new_char = str_to_find;
+    while((current_char = *argv[next_argument_idx]++) != '\0')
+    {
+        if(current_char != '\\')
+            *new_char++ = current_char;
     }
-
+    *new_char = '\0';
+    printf("Searching for: %s\n", str_to_find);
     return str_to_find;
 }
 
@@ -159,8 +155,7 @@ int main(int argc, char *argv[])
         printf("%d\n",matching_lines_count);
     }
 
-    if(params.regex)
-        free(str_to_find);
+    free(str_to_find);
     free(curr_line.line_content);
     fclose(input_file);
     return 0;
