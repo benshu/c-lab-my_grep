@@ -99,7 +99,6 @@ char* parse_str_to_find(char *argv[], int next_argument_idx)
             *new_char++ = current_char;
     }
     *new_char = '\0';
-    printf("Searching for: %s\n", str_to_find);
     return str_to_find;
 }
 
