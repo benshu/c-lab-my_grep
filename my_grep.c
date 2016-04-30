@@ -89,16 +89,18 @@ void replace_newline_with_nullbyte(char *line){
 char* parse_str_to_find(char *argv[], int next_argument_idx)
 {
     char *str_to_find = NULL;
-
+    bool escaped = false;
     char current_char=0, *new_char=NULL;
     str_to_find = malloc(sizeof(argv[next_argument_idx]));
     new_char = str_to_find;
     while((current_char = *argv[next_argument_idx]++) != '\0')
     {
-        if(current_char != '\\')
+        if(current_char != '\\' || escaped) {
             *new_char++ = current_char;
-        else if(*argv[next_argument_idx] == '\\')
-            *new_char++ = current_char;
+            escaped = false;
+        }
+        else
+            escaped = true;
     }
     *new_char = '\0';
     return str_to_find;
