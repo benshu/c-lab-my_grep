@@ -82,6 +82,7 @@ void replace_newline_with_nullbyte(char *line){
         line++;
     }
 }
+
 char* parse_str_to_find(char *argv[], int next_argument_idx)
 {
     char *str_to_find = NULL;
@@ -116,6 +117,7 @@ int read_line(FILE* input_file, Line *current_line)
     current_line->line_length = getline(&(current_line->line_content),
                                         &(current_line->line_buffer_capacity),
                                         input_file);
+    current_line->line_num++;
     return current_line->line_length;
 }
 
@@ -123,7 +125,7 @@ int main(int argc, char *argv[])
 {
     FILE *input_file;
     char *str_to_find=NULL;
-    int current_line_num=0, next_argument_idx=0;
+    int next_argument_idx=0;
     int matching_lines_count = 0;
 
     next_argument_idx = parse_arguments(argv);
@@ -139,12 +141,11 @@ int main(int argc, char *argv[])
         0,
         0,
         false };
-    //TODO - refactor to a function to readline and set all required params
 
     while(read_line(input_file, &curr_line) > 0){
-        curr_line.line_num = ++current_line_num;
         replace_newline_with_nullbyte(curr_line.line_content);
-        curr_line.is_match_in_line = is_match_in_line(curr_line.line_content, str_to_find);
+        curr_line.is_match_in_line = is_match_in_line(curr_line.line_content,
+                                                      str_to_find);
         matching_lines_count += report_line_match(&curr_line);
     }
     if (params.print_line_count) {
