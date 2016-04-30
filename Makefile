@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-g -O0 -Wall -Wextra -I.
 #DEPS = linked_list.h
-OBJ = my_grep.o
+OBJ = my_grep.o my_regex.o
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 

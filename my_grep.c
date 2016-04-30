@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include "my_grep.h"
-
+#include "my_regex.h"
 //
 // TODO - fix -b for stdin
 //
@@ -34,38 +34,10 @@ int parse_arguments(char *argv[])
     return next_argument;
 }
 
-bool chrcasecmp(char const a, char const b)
-{
-    int diff = tolower(a) - tolower(b);
-    return diff == 0;
-}
-
-bool match_regex_at_place(char* regex, char* text)
-{
-    if (regex[0] == '\0') 
-            return true;
-    if (text[0] != '\0'){
-       if(regex[0] == '.' || text[0] == regex[0] || 
-               (params.case_insensitive && chrcasecmp(text[0], regex[0]))) 
-        return match_regex_at_place(++regex, ++text);
-    }
-    return false;
-}
-bool match_regex(char* regex, char* text)
-{
-   do {
-      if (match_regex_at_place(regex, text)) {
-         return true; 
-      } 
-   } while (*text++ != '\0'); 
-   return false;
-}
-
 bool is_match_in_line(char *line, char *str_to_find)
 {
-    if (params.regex) {
-        return match_regex(str_to_find, line);
-    }
+    if (params.regex)
+        return match_regex(str_to_find, line, params.case_insensitive);
 
     if (params.case_insensitive)
         if (params.strict_match_only)
