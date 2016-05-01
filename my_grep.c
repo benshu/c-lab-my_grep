@@ -5,10 +5,9 @@
 #include <ctype.h>
 #include "my_grep.h"
 #include "my_regex.h"
-//
-// TODO - fix -b for stdin
-//
+
 Regex** regex_object;
+
 int parse_arguments(char *argv[])
 {
     int next_argument=1;

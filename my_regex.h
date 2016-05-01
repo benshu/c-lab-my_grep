@@ -15,7 +15,8 @@ typedef struct regex_struct{
     char single_char;
     char from;
     char to;
-    char *content;
+    struct regex_struct** optionA;
+    struct regex_struct** optionB;
 }Regex;
 
 
