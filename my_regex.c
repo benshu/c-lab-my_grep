@@ -70,45 +70,46 @@ void parse_regex(Regex** regex_result, char* regex_str, bool is_escaped)
     //printf("PARSING %c \n", *regex_str);
     if (*regex_str == '\0' )
     {
-        *regex_result = NULL;
+        regex_result[0] = NULL;
         return;
     }
     if (is_escaped || !strchr(SPECIAL_CHARS, *regex_str))
     {
         *regex_result = malloc(sizeof(Regex));
-        (*regex_result)->type = simple_char;
-        (*regex_result)->single_char = *regex_str;
+        regex_result[0]->type = simple_char;
+        regex_result[0]->single_char = *regex_str;
         parse_regex(++regex_result, regex_str + 1, false);
-    } else
+    }
+    else if (*regex_str == '\\')
+    {
+        parse_regex(regex_result, regex_str + 1, true);
+    }
+    else
     {
         switch (*regex_str) {
-            case '\\':
-                parse_regex(regex_result, regex_str + 1, true);
-                break;
             case '.':
                 *regex_result = malloc(sizeof(Regex));
-                (*regex_result)->type = dot;
-                (*regex_result)->single_char = *regex_str;
+                regex_result[0]->type = dot;
                 parse_regex(++regex_result, regex_str+1, false);
                 break;
             case '[':
                 //generate_regex_struct(*regex_result, brackets);
                 *regex_result = malloc(sizeof(Regex));
-                (*regex_result)->type = brackets;
-                (*regex_result)->from = *(regex_str+1);
-                (*regex_result)->to = *(regex_str+3);
+                regex_result[0]->type = brackets;
+                regex_result[0]->from = *(regex_str+1);
+                regex_result[0]->to = *(regex_str+3);
                 parse_regex(++regex_result, regex_str+4, false);
                 break;
             case '(':
                 //printf("PArtns : %s", regex_str);
                 *regex_result = malloc(sizeof(Regex));
-                (*regex_result)->type = parenthesis;
-                (*regex_result)->optionA = malloc(sizeof(Regex*) * strlen(regex_str));
-                (*regex_result)->optionB = malloc(sizeof(Regex*) * strlen(regex_str));
-                parse_regex((*regex_result)->optionA, regex_str+1, false);
+                regex_result[0]->type = parenthesis;
+                regex_result[0]->optionA = malloc(sizeof(Regex*) * strlen(regex_str));
+                regex_result[0]->optionB = malloc(sizeof(Regex*) * strlen(regex_str));
+                parse_regex(regex_result[0]->optionA, regex_str+1, false);
                 char *after_pipe = strchr(regex_str, '|') + 1;
                 //printf("AFTER PIPE : %s", after_pipe);
-                parse_regex((*regex_result)->optionB, after_pipe, false);
+                parse_regex(regex_result[0]->optionB, after_pipe, false);
                 char *after_parents = strchr(regex_str, ')') + 1;
                 //printf("AFTER PIPE : %s", after_pipe);
                 parse_regex(++regex_result, after_parents, false);
