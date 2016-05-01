@@ -8,7 +8,7 @@
 //
 // TODO - fix -b for stdin
 //
-
+Regex** regex_object;
 int parse_arguments(char *argv[])
 {
     int next_argument=1;
@@ -37,7 +37,9 @@ int parse_arguments(char *argv[])
 bool is_match_in_line(char *line, char *str_to_find)
 {
     if (params.regex)
-        return match_regex(str_to_find, line, params.case_insensitive);
+    {
+        return match_regex(regex_object, line, params.case_insensitive);
+    }
 
     if (params.case_insensitive)
         if (params.strict_match_only)
@@ -95,18 +97,25 @@ char* parse_str_to_find(char *argv[], int next_argument_idx)
     char *str_to_find = NULL;
     bool escaped = false;
     char current_char=0, *new_char=NULL;
-    str_to_find = malloc(sizeof(argv[next_argument_idx]));
-    new_char = str_to_find;
-    while((current_char = *argv[next_argument_idx]++) != '\0')
+    if (params.regex)
     {
-        if(current_char != '\\' || escaped) {
-            *new_char++ = current_char;
-            escaped = false;
-        }
-        else
-            escaped = true;
+        regex_object = malloc(sizeof(Regex*)*strlen(argv[next_argument_idx]));
+        parse_regex(regex_object, argv[next_argument_idx], false);
     }
-    *new_char = '\0';
+    else{
+        str_to_find = malloc(sizeof(argv[next_argument_idx]));
+        new_char = str_to_find;
+        while((current_char = *argv[next_argument_idx]++) != '\0')
+        {
+            if(current_char != '\\' || escaped) {
+                *new_char++ = current_char;
+                escaped = false;
+            }
+            else
+                escaped = true;
+        }
+        *new_char = '\0';
+    }
     return str_to_find;
 }
 
@@ -162,7 +171,10 @@ int main(int argc, char *argv[])
         printf("%d\n",matching_lines_count);
     }
 
-    free(str_to_find);
+    if(!params.regex)
+        free(str_to_find);
+    else
+        free_regex(regex_object);
     free(curr_line.line_content);
     fclose(input_file);
     return 0;

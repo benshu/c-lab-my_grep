@@ -3,18 +3,23 @@
 
 #include <stdbool.h>
 
+enum regex_type {
+    simple_char,
+    dot,
+    brackets,
+    parenthesis
+};
+
+typedef struct regex_struct{
+    enum regex_type type;
+    char single_char;
+    char from;
+    char to;
+    char *content;
+}Regex;
+
+
 /*
- *typedef struct params_struct{
- *    bool print_line_num;
- *    bool case_insensitive;
- *    bool regex;
- *    bool print_bytes_offset ;
- *    bool print_line_count;
- *    bool print_not_matching;
- *    bool strict_match_only;
- *    int print_multi_lines;
- *}Params_struct;
- *
  *typedef struct line{
  *    FILE *input_stream;
  *    char *line_content;
@@ -25,10 +30,12 @@
  *    bool is_match_in_line;
  *
  *}Line;
- *
  */
 
-bool match_regex_at_place(char* regex, char* text, bool case_insensitive);
-bool match_regex(char* regex, char* text, bool case_insensitive);
+
+void free_regex(Regex** regex);
+bool match_regex_at_place(Regex** regex, char* text, bool case_insensitive);
+bool match_regex(Regex** regex, char* text, bool case_insensitive);
+void parse_regex(Regex** regex_result, char* regex_str, bool is_escaped);
 
 #endif /* ifndef MYREGEX_H */

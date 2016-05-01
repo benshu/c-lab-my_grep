@@ -19,5 +19,7 @@ cat ./grep_tests/3lines | ./my_grep bla | diff ./grep_tests/out3 -
 ./my_grep -x -i bla grep_tests/3lines | diff grep_tests/out3 -
 cat grep_tests/2013.html | ./my_grep -A 2 -n -b -i io | diff grep_tests/myout10 -
 ./my_grep -n -E "bl." ./grep_tests/3lines | diff ./grep_tests/myout11 -
+./my_grep -n -E "I[E-Z]" grep_tests/2013.html | diff grep_tests/myout12 -
+cat grep_tests/my_grep | ./my_grep my_grep | diff grep_tests/my_grep_out -
 echo "--------------------------------------------------------------------------------"
 echo "Tests finished!"
