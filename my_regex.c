@@ -34,20 +34,6 @@ bool match_regex_at_place(Regex regex, char* text, bool case_insensitive)
     return false;
 }
 
-void free_regex(Regex regex)
-{
-    Regex temp = regex;
-    while (*temp != NULL) {
-        if((*temp)->type == parenthesis)
-        {
-            free_regex((*temp)->optionA);
-            free_regex((*temp)->optionB);
-        }
-        free(*temp);
-        temp++;
-    }
-    free(regex);
-}
 
 
 void generate_regex_struct(Regex new_regex, char *regex_str, enum regex_type type)
@@ -115,7 +101,6 @@ void parse_regex(Regex regex_result, char* regex_str, bool is_escaped)
 
 }
 
-
 bool match_regex(Regex regex, char* text, bool case_insensitive)
 {
     do {
@@ -126,21 +111,17 @@ bool match_regex(Regex regex, char* text, bool case_insensitive)
     return false;
 }
 
-/*
- *int main()
- *{
- *    char text[] = "bla";
- *    char re_str[] = "b.a";
- *    Regex** re = malloc(sizeof(Regex*) * strlen(text));
- *
- *    parse_regex(re, re_str, false);
- *    printf("FINISHED PARSING");
- *    if (match_regex(re, text, false))
- *       printf("FOUND MATCH");
- *    else
- *      printf("NO MATCH");
- *   return 0;
- *
- *}
- *
- */
+void free_regex(Regex regex)
+{
+    Regex temp = regex;
+    while (*temp != NULL) {
+        if((*temp)->type == parenthesis)
+        {
+            free_regex((*temp)->optionA);
+            free_regex((*temp)->optionB);
+        }
+        free(*temp);
+        temp++;
+    }
+    free(regex);
+}

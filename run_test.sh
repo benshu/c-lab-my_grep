@@ -1,11 +1,9 @@
 #! /usr/bin/env bash
-
-make
+make clean && make
 echo "Preforming Valgrind memory check no.1"
 valgrind --leak-check=yes ./my_grep -v -i -E "o\.pdf" grep_tests/2013.html > /dev/null
 echo "Preforming Valgrind memory check no.2"
 valgrind --leak-check=yes ./my_grep -v -i -E "(p.f|doc)" grep_tests/2013.html > /dev/null
-echo "Starting tests..."
 echo "--------------------------------------------------------------------------------"
 ./my_grep a ./grep_tests/emptyfile | diff ./grep_tests/emptyfile -
 ./my_grep bla ./grep_tests/bla | diff ./grep_tests/bla -
@@ -27,4 +25,3 @@ cat grep_tests/my_grep | ./my_grep my_grep | diff grep_tests/my_grep_out -
 ./my_grep -E "(b.a|li)" grep_tests/3lines | diff grep_tests/out11 -
 ./my_grep -E "r(i|A).[y-z]\." grep_tests/2013.html | diff grep_tests/out13 -
 echo "--------------------------------------------------------------------------------"
-echo "Tests finished!"
