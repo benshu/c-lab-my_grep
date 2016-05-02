@@ -1,9 +1,10 @@
 #! /usr/bin/env bash
 
 make
-echo "Preforming Valgrind memory check"
+echo "Preforming Valgrind memory check no.1"
 valgrind --leak-check=yes ./my_grep -v -i -E "o\.pdf" grep_tests/2013.html > /dev/null
-
+echo "Preforming Valgrind memory check no.2"
+valgrind --leak-check=yes ./my_grep -v -i -E "(p.f|doc)" grep_tests/2013.html > /dev/null
 echo "Starting tests..."
 echo "--------------------------------------------------------------------------------"
 ./my_grep a ./grep_tests/emptyfile | diff ./grep_tests/emptyfile -

@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 
+#define SPECIAL_CHARS  ".][}{|)(\\"
+
 enum regex_type {
     simple_char,
     dot,
