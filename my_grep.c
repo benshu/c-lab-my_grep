@@ -94,7 +94,7 @@ char* parse_str_to_find(char *argv[], int next_argument_idx, Regex *regex_object
     char current_char=0, *new_char=NULL;
     if (params.regex)
     {
-        *regex_object = malloc(sizeof(Regex_struct*)*strlen(argv[next_argument_idx]));
+        *regex_object = malloc(sizeof(Regex_struct*)*(strlen(argv[next_argument_idx])+1));
         parse_regex(*regex_object, argv[next_argument_idx], false);
     }
     else{
