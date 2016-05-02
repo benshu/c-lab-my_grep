@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "my_regex.h"
+
 
 typedef struct params_struct{
     bool print_line_num;
@@ -16,9 +18,6 @@ typedef struct params_struct{
     int print_multi_lines;
 }Params_struct;
 
-int multi_lines_to_print; // TODO - refactor this global to someplace better
-int input_stream_byte_offset;
-
 typedef struct line{
     FILE *input_stream;
     char *line_content;
@@ -26,6 +25,7 @@ typedef struct line{
     int bytes_offset;
     int line_num;
     int line_length;
+    int multi_lines_to_print;
     bool is_match_in_line;
 
 }Line;

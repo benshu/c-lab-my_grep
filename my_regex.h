@@ -17,7 +17,9 @@ typedef struct regex_struct{
     char to;
     struct regex_struct** optionA;
     struct regex_struct** optionB;
-}Regex;
+}Regex_struct;
+
+typedef Regex_struct** Regex;
 
 
 /*
@@ -34,9 +36,9 @@ typedef struct regex_struct{
  */
 
 
-void free_regex(Regex** regex);
-bool match_regex_at_place(Regex** regex, char* text, bool case_insensitive);
-bool match_regex(Regex** regex, char* text, bool case_insensitive);
-void parse_regex(Regex** regex_result, char* regex_str, bool is_escaped);
+void free_regex(Regex regex);
+bool match_regex_at_place(Regex regex, char* text, bool case_insensitive);
+bool match_regex(Regex regex, char* text, bool case_insensitive);
+void parse_regex(Regex regex_result, char* regex_str, bool is_escaped);
 
 #endif /* ifndef MYREGEX_H */

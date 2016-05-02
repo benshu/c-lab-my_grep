@@ -2,15 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include <ctype.h>
 #include "my_grep.h"
 #include "my_regex.h"
 
-Regex** regex_object;
 
 int parse_arguments(char *argv[])
 {
-    int next_argument=1;
+    int next_argument = 1;
     while (*(argv[next_argument])=='-') {
         if (*(argv[next_argument]+1)=='n')
             params.print_line_num = true;
@@ -33,12 +31,10 @@ int parse_arguments(char *argv[])
     return next_argument;
 }
 
-bool is_match_in_line(char *line, char *str_to_find)
+bool is_match_in_line(char *line, char *str_to_find, Regex regex_object)
 {
     if (params.regex)
-    {
         return match_regex(regex_object, line, params.case_insensitive);
-    }
 
     if (params.case_insensitive)
         if (params.strict_match_only)
@@ -50,14 +46,13 @@ bool is_match_in_line(char *line, char *str_to_find)
             return !strcmp(line,str_to_find);
         else
             return strstr(line,str_to_find);
-
 }
 
 int report_line_match(Line *current_line)
 {
     if((current_line->is_match_in_line && !params.print_not_matching) ||
             (!current_line->is_match_in_line && params.print_not_matching)){
-        multi_lines_to_print = params.print_multi_lines;
+        current_line->multi_lines_to_print = params.print_multi_lines;
         if (params.print_line_num) {
             printf("%d:", current_line->line_num);
         }
@@ -68,9 +63,9 @@ int report_line_match(Line *current_line)
             return 1;
         } else
             printf("%s\n",current_line->line_content);
-    }else if(multi_lines_to_print > 0)
+    }else if(current_line->multi_lines_to_print > 0)
     {
-        multi_lines_to_print--;
+        current_line->multi_lines_to_print--;
         if (params.print_line_num)
             printf("%d-", current_line->line_num);
         if (params.print_bytes_offset) {
@@ -91,15 +86,15 @@ void replace_newline_with_nullbyte(char *line){
     }
 }
 
-char* parse_str_to_find(char *argv[], int next_argument_idx)
+char* parse_str_to_find(char *argv[], int next_argument_idx, Regex *regex_object)
 {
     char *str_to_find = NULL;
     bool escaped = false;
     char current_char=0, *new_char=NULL;
     if (params.regex)
     {
-        regex_object = malloc(sizeof(Regex*)*strlen(argv[next_argument_idx]));
-        parse_regex(regex_object, argv[next_argument_idx], false);
+        *regex_object = malloc(sizeof(Regex_struct*)*strlen(argv[next_argument_idx]));
+        parse_regex(*regex_object, argv[next_argument_idx], false);
     }
     else{
         str_to_find = malloc(sizeof(argv[next_argument_idx]));
@@ -120,18 +115,17 @@ char* parse_str_to_find(char *argv[], int next_argument_idx)
 
 FILE *parse_input_file(char argc, char *argv[], int next_argument_idx)
 {
-    if (next_argument_idx<(argc-1)) {
+    if (next_argument_idx < (argc-1)) {
         return fopen(argv[++next_argument_idx],"r");
-    } else {
+    } else
         return stdin;
-    }
 }
 
 int read_line(FILE* input_file, Line *current_line)
 {
     current_line->line_length = getline(&(current_line->line_content),
-                                        &(current_line->line_buffer_capacity),
-                                        input_file);
+            &(current_line->line_buffer_capacity),
+            input_file);
     current_line->bytes_offset += current_line->line_length;
     current_line->line_num++;
     return current_line->line_length;
@@ -143,11 +137,10 @@ int main(int argc, char *argv[])
     char *str_to_find=NULL;
     int next_argument_idx=0;
     int matching_lines_count = 0;
+    Regex regex_object = NULL;
 
     next_argument_idx = parse_arguments(argv);
-
-    str_to_find = parse_str_to_find(argv, next_argument_idx);
-
+    str_to_find = parse_str_to_find(argv, next_argument_idx, &regex_object);
     input_file = parse_input_file(argc, argv, next_argument_idx);
 
     Line curr_line = {
@@ -157,12 +150,13 @@ int main(int argc, char *argv[])
         0,            // bytes_offset;
         0,            // line_num;
         0,            // line_length;
+        0,            // multi_lines_to_print;
         false };      // is_match_in_line;
 
     while(read_line(input_file, &curr_line) > 0){
         replace_newline_with_nullbyte(curr_line.line_content);
         curr_line.is_match_in_line = is_match_in_line(curr_line.line_content,
-                                                      str_to_find);
+                str_to_find, regex_object);
         matching_lines_count += report_line_match(&curr_line);
     }
 
